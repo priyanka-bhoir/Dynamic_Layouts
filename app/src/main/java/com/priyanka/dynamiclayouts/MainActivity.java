@@ -5,18 +5,18 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
-import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+
 
 import static android.view.Gravity.CENTER;
 
@@ -39,11 +40,16 @@ public class MainActivity extends AppCompatActivity {
     Button submit;
     int i=0;
     String TAG="Main";
+    Data data;
+    DatabaseHelper mdata;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Intent intent=new Intent(this,Recycler.class);
+        startActivity(intent);
 
         linearLayout=findViewById(R.id.linear);
         scrollView =findViewById(R.id.scrollView);
@@ -169,6 +175,9 @@ public class MainActivity extends AppCompatActivity {
                 return null;
             }
         };
+        mdata=new DatabaseHelper(this);
+
+
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
         params.setMargins(30,20,30,20);
@@ -186,23 +195,24 @@ public class MainActivity extends AppCompatActivity {
 
         //Text inputlayot
         //name
-        text(nametextInputLayout,nametext,"Name",0,i);
+        nametext=text(nametextInputLayout,nametext,"Name",0,i);
 
         //number
-        text(numbertextLayout,numbertext,"Number",0,i);
+        numbertext=text(numbertextLayout,numbertext,"Number",0,i);
+        numbertext.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10)});
 //        linearLayout.addView(numbertextLayout);
 
         //Email
-        text(emaillayout,emailtext,"Email",0,i);
+        emailtext=text(emaillayout,emailtext,"Email",0,i);
 //        linearLayout.addView(emaillayout);
 
         //website
-        text(websiteLayout,websitetext,"Website",0,i);
+        websitetext=text(websiteLayout,websitetext,"Website",0,i);
         //Password
 
-        text(passwordLayout,passwordtext,"Password",1,i);
+        passwordtext=text(passwordLayout,passwordtext,"Password",1,i);
 
-        text(confPassLayout,confpasstext,"ReEnter password",1,i);
+        confpasstext=text(confPassLayout,confpasstext,"ReEnter password",1,i);
 
         submit=new Button(this);
         submit.setText("Submit");
@@ -216,44 +226,67 @@ public class MainActivity extends AppCompatActivity {
 
 //                name=nametext.getText().toString();
                 //                    linearLayout.getChildAt(1);
-                //                    Log.e(TAG, "onClick:==> " +linearLayout.getChildAt(1));
+                                    Log.e(TAG, "onClick:==> " +linearLayout.getChildAt(1)+"name"+nametext.getText().toString());
+                Log.e(TAG, "onClick: "+"pass" +passwordtext.getText().toString()+"c"+confpasstext.getText().toString());
+
                 TextWatcher textWatcher = new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                        Log.e(TAG, "beforeTextChanged: "+nametext.getText().toString().length());
+                        if (nametext.getText().toString().equals(""))
+                            nametext.setError("Invalid");
                     }
 
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
 
+//                        password=passwordtext.getText().toString();
+//                        confpass=confpasstext.getText().toString();
+//                        if (!confpasstext.getText().toString().equals(passwordtext.getText().toString()))
+//                            confpasstext.setError("Invalid");
                     }
 
                     @Override
                     public void afterTextChanged(Editable s) {
-                        if (nametext.getText().length()>0)
-                        nametext.setError("Invalid");
+                        Log.e(TAG, "afterTextChanged: "+ nametext.getText().toString().length());
+
                     }
                 };
-                nametext.addTextChangedListener(textWatcher);
-//                else if(number.isEmpty() && number.length()<13){
-//                    numbertext.setError("Invalid");
-//                }
-//                else if(email.isEmpty()){
-//                    emailtext.setError("Empty");
-//                }else if(website.isEmpty()){
-//                    websitetext.setError("Empty");
-//                }else if(confpass.equals(password)){
-//                    passwordtext.setError("Invalid");
-//                }
+                passwordtext.addTextChangedListener(textWatcher);
+                confpasstext.addTextChangedListener(textWatcher);
+                if (nametext.getText().toString().equals("")){
+                    nametext.setError("Invalid");}
+                else if(numbertext.getText().toString().equals("") || numbertext.getText().length()<10 ||numbertext.getText().toString().length()>10 ){
+
+                    numbertext.setError("Invalid");
+                }
+                else if(emailtext.getText().toString().equals("")){
+                    emailtext.setError("Empty");
+                }else if(websitetext.getText().toString().equals("")){
+                    websitetext.setError("Empty");
+                }else if( confpasstext.getText().toString().equals("")){
+                    Log.e(TAG, "onClick: "+"pass" +passwordtext.getText().toString()+"c=>"+confpasstext.getText().toString());
+                    confpasstext.setError("Invalid");
+                }else if (passwordtext.getText().toString().equals("")||!confpasstext.getText().toString().equals(passwordtext.getText().toString())){
+                    confpasstext.setError("Invalid");
+                }else {
+
+                    data=new Data(nametext.getText().toString(),numbertext.getText().toString(),emailtext.getText().toString(),websitetext.getText().toString(),passwordtext.getText().toString());
+                    mdata.insert(data);
+                    Toast toast=Toast.makeText(getApplicationContext(),"Data Inserted",Toast.LENGTH_SHORT);
+                    toast.show();
+                    Intent intent=new Intent(MainActivity.this, Recycler.class);
+                    startActivity(intent);
+                }
             }
         });
 
 
     }
 
-    void text(TextInputLayout numbertextLayout, TextInputEditText numbertext,String hint,int flag,int i){
+    TextInputEditText text(TextInputLayout numbertextLayout, TextInputEditText numbertext, String hint, int flag, int i){
 
-        String text;
+//        String text;
         i--;
         TextInputLayout.LayoutParams textinputparams = new TextInputLayout.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.MATCH_PARENT);
         textinputparams.setMargins(10,5,10,5);
@@ -266,7 +299,7 @@ public class MainActivity extends AppCompatActivity {
         numbertextLayout.addView(numbertext,0);
         listData.add(numbertext);
         linearLayout.addView(numbertextLayout,i);
-        text=numbertext.getText().toString();
-        return ;
+//        text=numbertext.getText().toString();
+        return numbertext;
     }
 }
