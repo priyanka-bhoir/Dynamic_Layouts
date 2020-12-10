@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -28,7 +29,10 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.gson.Gson;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -44,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     List<TextInputEditText> listData;
     TextInputLayout nametextInputLayout,numbertextLayout,emaillayout,websiteLayout,passwordLayout,confPassLayout;
     TextInputEditText nametext,numbertext,emailtext,websitetext,passwordtext,confpasstext;
-    String name,number,email,website,password,confpass;
+    String name,number,email,website,password,confpass,radiot;
     Button submit;
     int i=0;
     String TAG="Main";
@@ -53,11 +57,14 @@ public class MainActivity extends AppCompatActivity {
     Spinner spinner;
     String [] from;
     EditText editText,editText1;
-    int [] to;
+    ArrayList<String> checklist;
+    ArrayList<String> list;
     TextView textView,Dropdown,radio,checkbox;
     RadioButton radioButton,radioButton1;
     CheckBox checkBox,checkBox1,checkBox2,checkBox3;
     TableRow tableRow;
+    Gson gson;
+    String val;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -192,7 +199,8 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         mdata=new DatabaseHelper(this);
-
+        checklist=new ArrayList<>();
+        gson=new Gson();
 
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
@@ -206,7 +214,6 @@ public class MainActivity extends AppCompatActivity {
         textView.setTextSize((float) 50);
         textView.setPadding(10,0,10,0);
         linearLayout.addView(textView,0);
-
 
 
         //Text inputlayot
@@ -229,6 +236,7 @@ public class MainActivity extends AppCompatActivity {
         linearLayout.addView(Dropdown);
 
         from=new String[]{"Tokiyo","Rio","Nairobi","Berlin","Helsi"};
+//        final String[] val = new String[1];
         spinner=new Spinner(this);
         spinner.setLayoutParams(params);
         ArrayAdapter adapter=new ArrayAdapter(MainActivity.this, android.R.layout.simple_spinner_item,from);
@@ -236,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
+                val = (String) parent.getSelectedItem();
             }
 
             @Override
@@ -271,6 +279,12 @@ public class MainActivity extends AppCompatActivity {
                 radioButton.setChecked(false);
             }
         });
+        if(radioButton1.isChecked()){
+            radiot="Radio"+radioButton1.getId();
+        }
+        else {
+            radiot="Radio"+radioButton.getId();
+        }
 
         linearLayout.addView(radioButton);
         linearLayout.addView(radioButton1);
@@ -284,14 +298,36 @@ public class MainActivity extends AppCompatActivity {
 
         checkBox=new CheckBox(this);
         checkBox.setLayoutParams(params);
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(checkBox.isChecked()) {
+                    checklist.add("Bugatti");
+                }
+            }
+        });
         checkBox.setText("Bugatti");
 
         checkBox1=new CheckBox(this);
         checkBox1.setLayoutParams(params);
+        checkBox1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (checkBox1.isChecked()){
+                checklist.add("Lembo");}
+            }
+        });
         checkBox1.setText("Lembo");
 
         checkBox2=new CheckBox(this);
         checkBox2.setLayoutParams(params);
+        checkBox2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (checkBox2.isChecked()){
+                checklist.add("RR");}
+            }
+        });
         checkBox2.setText("RR");
 
         linearLayout.addView(checkBox);
@@ -397,12 +433,19 @@ public class MainActivity extends AppCompatActivity {
                     confpasstext.setError("Invalid");
                 }else {
 
-                    data=new Data(nametext.getText().toString(),numbertext.getText().toString(),emailtext.getText().toString(),websitetext.getText().toString(),passwordtext.getText().toString());
+                    String input=gson.toJson(checklist);
+                    Log.e(TAG, "onClick: ====> input Priyanka"+input);
+                    data=new Data(nametext.getText().toString(),numbertext.getText().toString(),emailtext.getText().toString(),websitetext.getText().toString(),passwordtext.getText().toString(),val,radiot,input,editText.getText().toString(),editText1.getText().toString());
+                    try{
                     mdata.insert(data);
                     Toast toast=Toast.makeText(getApplicationContext(),"Data Inserted",Toast.LENGTH_SHORT);
                     toast.show();
+                    mdata.listData();
                     Intent intent=new Intent(MainActivity.this, Recycler.class);
                     startActivity(intent);
+                    }catch(Exception e){
+                        Toast toast=Toast.makeText(getApplicationContext(),"Data Error==> Enter the full data",Toast.LENGTH_SHORT);
+                    }
                 }
             }
         });

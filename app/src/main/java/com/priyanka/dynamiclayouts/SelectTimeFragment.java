@@ -27,9 +27,7 @@ public class SelectTimeFragment extends DialogFragment implements TimePicker.OnT
         sdf = new SimpleDateFormat("hh:mm");
         int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
         int min = calendar.get(Calendar.MINUTE);
-//        AMPM=calendar.get(Calendar.AM_PM);
-//        int dd = calendar.get(Calendar.DAY_OF_MONTH);
-//        TimePickerDialog tpd=new TimePickerDialog()
+
         if (calendar.get(Calendar.AM_PM) == Calendar.AM)
             am_pm = "AM";
         else if (calendar.get(Calendar.AM_PM) == Calendar.PM)

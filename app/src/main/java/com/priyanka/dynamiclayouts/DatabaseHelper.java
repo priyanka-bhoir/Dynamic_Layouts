@@ -9,6 +9,10 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -21,17 +25,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String email = "email";
     public static final String web = "web";
     public static final String password="password";
+    public static final String dropdown="dropdown";
+    public static final String radio="radio";
+    public static final String checkbox="checkbox";
+    public static final String date="date";
+    public static final String time="time";
     private static final String TAG = "Main";
+    Gson gson;
+
 
     public DatabaseHelper(@Nullable Context context) {
-        super(context, Databse_name, null, 1);
+        super(context, Databse_name, null, 2);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(
                 "create table "+ Table_name +
-                        "(id integer primary key, fname text,email text, phone text,web text,password text)"
+                        "(id integer primary key, name text,email text, phone text,web text,password text,dropdown text,radio text, checkbox text,date text,time text)"
         );
     }
 
@@ -42,12 +53,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     void insert(Data data){
+        Log.e(TAG, "insert: =?" );
         ContentValues contentValues = new ContentValues();
         contentValues.put(name, data.getName());
         contentValues.put(email, data.getEmail());
         contentValues.put(phone, data.getNumber());
         contentValues.put(web, data.getWeb());
         contentValues.put(password,data.getPass());
+        contentValues.put(dropdown,data.getDropdown());
+        contentValues.put(radio,data.getRadio());
+        contentValues.put(checkbox,data.getCheckbox());
+        contentValues.put(date,data.getDate());
+        contentValues.put(time,data.getTime());
         SQLiteDatabase db = this.getWritableDatabase();
         db.insert(Table_name, null, contentValues);
     }
@@ -60,21 +77,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.e("listdata", "listData: 1" +storeData);
         Cursor cursor=db.rawQuery(query,null);
 
-        Log.e("TAG", "cursor count===: "+cursor.getCount() );
+        Log.e("TAG", "cursor count===: "+cursor );
 
 //        while (cursor.moveToNext()) {
         if(cursor.moveToFirst()) {
             while (cursor.moveToNext()) {
                 String id = cursor.getString(0);
                 String name = cursor.getString(1);
-//                Log.e("id", "listData" + Fname);
-                String Lname = cursor.getString(2);
-                String email = cursor.getString(3);
-                String phone = cursor.getString(4);
-                String web = cursor.getString(5);
-                String pass=cursor.getString(6);
-//                Log.e(TAG, "listData: "+"id"+id+""+ Fname+"f "+ Lname+"l"+phone+"p"+web+"w"+email+"e"+password);
-                storeData.add(new Data(name,phone,web,email,pass,id));
+//                String Lname = cursor.getString(2);
+                String email = cursor.getString(2);
+                String phone = cursor.getString(3);
+                String web = cursor.getString(4);
+                String pass=cursor.getString(5);
+                String dropdown=cursor.getString(6);
+                String radio=cursor.getString(7);
+                String checkbox=cursor.getString(8);
+                String date=cursor.getString(9);
+                String time=cursor.getString(10);
+                Log.e(TAG, "listData: "+"id"+id+""+ name+"f "+"l"+phone+"p"+web+"w"+email+"e"+password);
+
+
+                storeData.add(new Data(id,name,phone,email,web,pass,dropdown,radio,checkbox,date,time));
                 Log.e(TAG, "listData: " + id);
             }
 //        }

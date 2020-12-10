@@ -7,37 +7,38 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.LinearLayout;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Recycler extends AppCompatActivity {
 
     RecyclerView recycler;
     LinearLayout linearLayout;
-    List<Data> dataList;
+    ArrayList<Data> dataList;
     DatabaseHelper databaseHelper;
     Adapter adapter;
+    View recyclerView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recycler_view);
-//        linearLayout=findViewById(R.id.relinear);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.MATCH_PARENT);
-        recycler=findViewById(R.id.recyclerview);
         databaseHelper=new DatabaseHelper(this);
-        adapter=new Adapter();
+        dataList=databaseHelper.listData();
 
+        recycler=findViewById(R.id.recyclerview);
+        recycler.setHasFixedSize(true);
+
+        adapter=new Adapter(this,dataList);
+        Log.e("parthi","datalist--->"+dataList);
         recycler.setLayoutManager(new LinearLayoutManager(this));
         recycler.setItemAnimator(new DefaultItemAnimator());
         recycler.setAdapter(adapter);
-
-
-//        linearLayout.addView(recyclerView);
-//        recyclerView.setHasTransientState();
-//        recyclerView=findViewById(R.id.recyclerview);
 
     }
 }
