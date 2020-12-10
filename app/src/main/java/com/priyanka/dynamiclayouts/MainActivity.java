@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,9 +13,16 @@ import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.ScrollView;
+import android.widget.Spinner;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +50,14 @@ public class MainActivity extends AppCompatActivity {
     String TAG="Main";
     Data data;
     DatabaseHelper mdata;
+    Spinner spinner;
+    String [] from;
+    EditText editText,editText1;
+    int [] to;
+    TextView textView,Dropdown,radio,checkbox;
+    RadioButton radioButton,radioButton1;
+    CheckBox checkBox,checkBox1,checkBox2,checkBox3;
+    TableRow tableRow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
 //        txt_gender.setLayoutParams(params);
 
         //Welcome text view
-        TextView textView=new TextView(MainActivity.this);
+        textView=new TextView(MainActivity.this);
         textView.setText("WELCOME");
         textView.setGravity(CENTER);
         textView.setTextSize((float) 50);
@@ -205,6 +221,116 @@ public class MainActivity extends AppCompatActivity {
         //Email
         emailtext=text(emaillayout,emailtext,"Email",0,i);
 //        linearLayout.addView(emaillayout);
+
+        //spinner
+        Dropdown=new TextView(this);
+        Dropdown.setText("Select your fav charecter");
+        Dropdown.setLayoutParams(params);
+        linearLayout.addView(Dropdown);
+
+        from=new String[]{"Tokiyo","Rio","Nairobi","Berlin","Helsi"};
+        spinner=new Spinner(this);
+        spinner.setLayoutParams(params);
+        ArrayAdapter adapter=new ArrayAdapter(MainActivity.this, android.R.layout.simple_spinner_item,from);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        linearLayout.addView(spinner);
+
+
+        //Radio button
+        radio= new TextView(this);
+        radio.setText("Ohh which radio station you wana select");
+        radio.setLayoutParams(params);
+        linearLayout.addView(radio);
+        radioButton=new RadioButton(this);
+        radioButton.setId(View.generateViewId());
+        radioButton.setText("Radio"+radioButton.getId());
+        radioButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                radioButton1.setChecked(false);
+            }
+        });
+
+        radioButton1=new RadioButton(this);
+        radioButton1.setId(View.generateViewId());
+        radioButton1.setText("Radio"+radioButton1.getId());
+        radioButton1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                radioButton.setChecked(false);
+            }
+        });
+
+        linearLayout.addView(radioButton);
+        linearLayout.addView(radioButton1);
+
+        //Checkbox
+
+        checkbox= new TextView(this);
+        checkbox.setText("Add all your Fav cars");
+        checkbox.setLayoutParams(params);
+        linearLayout.addView(checkbox);
+
+        checkBox=new CheckBox(this);
+        checkBox.setLayoutParams(params);
+        checkBox.setText("Bugatti");
+
+        checkBox1=new CheckBox(this);
+        checkBox1.setLayoutParams(params);
+        checkBox1.setText("Lembo");
+
+        checkBox2=new CheckBox(this);
+        checkBox2.setLayoutParams(params);
+        checkBox2.setText("RR");
+
+        linearLayout.addView(checkBox);
+        linearLayout.addView(checkBox1);
+        linearLayout.addView(checkBox2);
+
+        //Date Picker
+        tableRow=new TableRow(this);
+        tableRow.setLayoutParams(params);
+        editText=new EditText(this);
+        editText.setLayoutParams(params);
+        editText.setHint("Tap to select date");
+        editText.setFocusable(false);
+        editText.setClickable(true);
+        editText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment newFragment = new SelectDateFragment(editText);
+                newFragment.show(getSupportFragmentManager(), "DatePicker");
+            }
+        });
+        linearLayout.addView(editText);
+
+        //Time Picker
+        editText1=new EditText(this);
+        editText1.setLayoutParams(params);
+        editText1.setHint("tap to select time");
+        editText1.setFocusable(false);
+        editText1.setClickable(true);
+        editText1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment newFragment = new SelectTimeFragment(editText1);
+                newFragment.show(getSupportFragmentManager(), "DatePicker");
+            }
+        });
+        linearLayout.addView(editText1);
+
+
 
         //website
         websitetext=text(websiteLayout,websitetext,"Website",0,i);
