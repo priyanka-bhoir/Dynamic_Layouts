@@ -94,7 +94,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 String checkbox=cursor.getString(8);
                 String date=cursor.getString(9);
                 String time=cursor.getString(10);
-                Log.e(TAG, "listData: "+"id"+id+""+ name+"f "+"l"+phone+"p"+web+"w"+email+"e"+password);
+                Log.e(TAG, "listData: "+"id"+id+""+ name+"f "+"l"+phone+"p"+web+"w "+email+"e "+pass+"p "+dropdown+"d "+radio+"r "+checkbox+":c"+date +" d:"+time+"t");
 
 
                 storeData.add(new Data(id,name,phone,email,web,pass,dropdown,radio,checkbox,date,time));
@@ -112,6 +112,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //        contentValues.put(lname,data.getLname());
         contentValues.put(email,data.getEmail());
         contentValues.put(phone,data.getNumber());
+        contentValues.put(dropdown,data.getDropdown());
+        contentValues.put(radio,data.getRadio());
+        contentValues.put(checkbox,data.getCheckbox());
+        contentValues.put(date,data.getDate());
+        contentValues.put(time,data.getTime());
         contentValues.put(web,data.getWeb());
         SQLiteDatabase db = this.getReadableDatabase();
         db.update(Table_name,contentValues,ID +" =   ? ",null);

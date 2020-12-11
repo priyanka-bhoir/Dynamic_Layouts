@@ -10,7 +10,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.InputType;
 import android.text.TextWatcher;
+import android.text.method.PasswordTransformationMethod;
+import android.text.method.TransformationMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -30,7 +33,9 @@ import android.widget.Toast;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,8 +53,9 @@ public class MainActivity extends AppCompatActivity {
     List<TextInputEditText> listData;
     TextInputLayout nametextInputLayout,numbertextLayout,emaillayout,websiteLayout,passwordLayout,confPassLayout;
     TextInputEditText nametext,numbertext,emailtext,websitetext,passwordtext,confpasstext;
-    String name,number,email,website,password,confpass,radiot;
-    Button submit;
+    String radiot;
+    String IDi,Namei,Numberi,Emaili,Dropdowni,Radioi,Checkboxi,Datei,Timei,Websitei;
+    Button submit,array;
     int i=0;
     String TAG="Main";
     Data data;
@@ -65,14 +71,15 @@ public class MainActivity extends AppCompatActivity {
     TableRow tableRow;
     Gson gson;
     String val;
+    int p;
+    int flag=0;
+    Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent intent=new Intent(this,Recycler.class);
-        startActivity(intent);
 
         linearLayout=findViewById(R.id.linear);
         scrollView =findViewById(R.id.scrollView);
@@ -218,15 +225,20 @@ public class MainActivity extends AppCompatActivity {
 
         //Text inputlayot
         //name
-        nametext=text(nametextInputLayout,nametext,"Name",0,i);
+        nametext=text(nametextInputLayout,nametext,"Name",flag,i);
+        nametext.setFocusable(true);
 
         //number
-        numbertext=text(numbertextLayout,numbertext,"Number",0,i);
+        numbertext=text(numbertextLayout,numbertext,"Number",flag,i);
         numbertext.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10)});
+        numbertext.setFocusable(true);
+        numbertext.setInputType(InputType.TYPE_CLASS_NUMBER);
 //        linearLayout.addView(numbertextLayout);
 
         //Email
-        emailtext=text(emaillayout,emailtext,"Email",0,i);
+        emailtext=text(emaillayout,emailtext,"Email",flag,i);
+        emailtext.setFocusable(true);
+        emailtext.setInputType(InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS);
 //        linearLayout.addView(emaillayout);
 
         //spinner
@@ -239,8 +251,9 @@ public class MainActivity extends AppCompatActivity {
 //        final String[] val = new String[1];
         spinner=new Spinner(this);
         spinner.setLayoutParams(params);
-        ArrayAdapter adapter=new ArrayAdapter(MainActivity.this, android.R.layout.simple_spinner_item,from);
+        ArrayAdapter adapter=new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1,from);
         spinner.setAdapter(adapter);
+//        spinner.setSelection();
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -262,7 +275,7 @@ public class MainActivity extends AppCompatActivity {
         linearLayout.addView(radio);
         radioButton=new RadioButton(this);
         radioButton.setId(View.generateViewId());
-        radioButton.setText("Radio"+radioButton.getId());
+        radioButton.setText("Radio 1");
         radioButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -272,7 +285,7 @@ public class MainActivity extends AppCompatActivity {
 
         radioButton1=new RadioButton(this);
         radioButton1.setId(View.generateViewId());
-        radioButton1.setText("Radio"+radioButton1.getId());
+        radioButton1.setText("Radio 2");
         radioButton1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -369,18 +382,99 @@ public class MainActivity extends AppCompatActivity {
 
 
         //website
-        websitetext=text(websiteLayout,websitetext,"Website",0,i);
+        websitetext=text(websiteLayout,websitetext,"Website",flag,i);
+        websitetext.setFocusable(true);
+        websitetext.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
+
+//        TextInputEditText edit = (TextInputEditText) websiteLayout.getChildAt(0);
+//        edit.getText().toString();
+//        Log.e(TAG, "onCreate: ", );
+
         //Password
+        intent = getIntent();
+        if(intent!=null) {
+//            int flag
+            IDi = intent.getStringExtra("ID");
+            Namei = intent.getStringExtra("Name");
+            Emaili = intent.getStringExtra("Email");
+            Numberi = intent.getStringExtra("Phone");
+            Dropdowni=intent.getStringExtra("Dropdown");
+            Radioi=intent.getStringExtra("Radio");
+            Checkboxi=intent.getStringExtra("Check");
+            Datei=intent.getStringExtra("Date");
+            Timei=intent.getStringExtra("Time");
+            Websitei = intent.getStringExtra("Website");
+            flag=intent.getFlags();
+            if (IDi!=null){
+                flag=1;
+//                passwordLayout.setVisibility(View.GONE);
+//                confPassLayout.setVisibility(View.GONE);
 
-        passwordtext=text(passwordLayout,passwordtext,"Password",1,i);
+            nametext.setText(Namei);
+            numbertext.setText(Numberi);
+            emailtext.setText(Emaili);
+            //for spinner
 
-        confpasstext=text(confPassLayout,confpasstext,"ReEnter password",1,i);
+            for(int i=0;i<from.length;i++){
+                if(from[i].equals(Dropdowni)){
+                    p=i;
+                    break;
+                }
+            }
+            Log.e(TAG, "onCreate: spinner value"+p );
+            spinner.setSelection(p);
+//            linearLayout.addView(spinner);
 
+            //for radio
+            Log.e(TAG, "onCreate: Radio"+Radioi);
+            if(Radioi.equals("Radio1"))
+            {
+                radioButton.setChecked(true);
+            }
+            else {
+                radioButton.setChecked(false);
+            }
+
+            //for Checkbox
+                Log.e(TAG, "onCreate: Checkbox==>"+Checkboxi );
+                Type type = new TypeToken<ArrayList<String>>() {}.getType();
+
+                ArrayList<String> finalOutputString = gson.fromJson(Checkboxi, type);
+                for(String s:finalOutputString){
+                    if (s.equals("Bugatti")){
+                        checkBox.setChecked(true);
+                    }else if (s.equals("Lembo")){
+                        checkBox1.setChecked(true);
+                    }else if(s.equals("RR")){
+                        checkBox2.setChecked(true);
+                    }
+                }
+
+                //for Date
+                editText.setText(Datei);
+
+                //For Time
+                editText1.setText(Timei);
+
+
+
+            websitetext.setText(Websitei);
+        }}
+
+        passwordtext=text(passwordLayout,passwordtext,"Password",flag,9);
+        passwordtext.setTransformationMethod(new PasswordTransformationMethod());
+
+        confpasstext=text(confPassLayout,confpasstext,"ReEnter password",flag,9);
+        confpasstext.setTransformationMethod(new PasswordTransformationMethod());
+
+        //Submit button
         submit=new Button(this);
         submit.setText("Submit");
         submit.setLayoutParams(params);
         submit.setGravity(CENTER);
         linearLayout.addView(submit);
+
+
 
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -436,6 +530,7 @@ public class MainActivity extends AppCompatActivity {
                     String input=gson.toJson(checklist);
                     Log.e(TAG, "onClick: ====> input Priyanka"+input);
                     data=new Data(nametext.getText().toString(),numbertext.getText().toString(),emailtext.getText().toString(),websitetext.getText().toString(),passwordtext.getText().toString(),val,radiot,input,editText.getText().toString(),editText1.getText().toString());
+                    if (IDi==null){
                     try{
                     mdata.insert(data);
                     Toast toast=Toast.makeText(getApplicationContext(),"Data Inserted",Toast.LENGTH_SHORT);
@@ -446,17 +541,37 @@ public class MainActivity extends AppCompatActivity {
                     }catch(Exception e){
                         Toast toast=Toast.makeText(getApplicationContext(),"Data Error==> Enter the full data",Toast.LENGTH_SHORT);
                     }
+                    }
+                    else {
+                        mdata.Update(data);
+                        Toast toast=Toast.makeText(getApplicationContext(),"Data Inserted",Toast.LENGTH_SHORT);
+                        toast.show();
+                        mdata.listData();
+                        Intent intent=new Intent(MainActivity.this, Recycler.class);
+                        startActivity(intent);
+                    }
                 }
             }
         });
 
-
+        array=new Button(this);
+        array.setLayoutParams(params);
+        array.setText("Home");
+        array.setGravity(CENTER);
+        array.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(getApplicationContext(),Recycler.class);
+                startActivity(intent);
+            }
+        });
+        linearLayout.addView(array);
     }
 
     TextInputEditText text(TextInputLayout numbertextLayout, TextInputEditText numbertext, String hint, int flag, int i){
 
 //        String text;
-        i--;
+//        i--;
         TextInputLayout.LayoutParams textinputparams = new TextInputLayout.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.MATCH_PARENT);
         textinputparams.setMargins(10,5,10,5);
         numbertextLayout=new TextInputLayout(this);
@@ -467,7 +582,13 @@ public class MainActivity extends AppCompatActivity {
         numbertext.setLayoutParams(textinputparams);
         numbertextLayout.addView(numbertext,0);
         listData.add(numbertext);
-        linearLayout.addView(numbertextLayout,i);
+        if(flag==1){
+            numbertextLayout.setVisibility(View.GONE);
+        }
+        if (i==9){
+            numbertextLayout.setPasswordVisibilityToggleEnabled(true);
+        }
+        linearLayout.addView(numbertextLayout);
 //        text=numbertext.getText().toString();
         return numbertext;
     }

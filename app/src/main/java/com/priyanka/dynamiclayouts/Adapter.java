@@ -2,12 +2,17 @@ package com.priyanka.dynamiclayouts;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -28,6 +33,7 @@ public class Adapter extends RecyclerView.Adapter<View_Holder> {
     ArrayList<Data> arrayList;
     DatabaseHelper db;
     Gson gson=new Gson();
+    Intent i;
 
 
     public Adapter(Context context, ArrayList<Data> arrayList) {
@@ -57,14 +63,14 @@ public class Adapter extends RecyclerView.Adapter<View_Holder> {
        // Log.e(TAG, "onBindViewHolder: "+data.getName());
         //name
         holder.Name=new TextView(context);
-        holder.Name.setText(data.getName());
+        holder.Name.setText("Name: "+data.getName());
         holder.Name.setLayoutParams(params);
         holder.linearLayout1.addView(holder.Name);
 
         //FAV CHAR
         holder.dropdown=new TextView(context);
         holder.dropdown.setLayoutParams(params);
-        holder.dropdown.setText(data.getDropdown());
+        holder.dropdown.setText("Fav character: "+data.getDropdown());
         holder.linearLayout1.addView(holder.dropdown);
 
         //RADIO
@@ -82,8 +88,121 @@ public class Adapter extends RecyclerView.Adapter<View_Holder> {
         ArrayList<String> finalOutputString = gson.fromJson(output, type);
         holder.checkbox.setLayoutParams(params);
         Log.e(TAG, "onBindViewHolder: finalOutputString==>"+finalOutputString);
-        holder.checkbox.setText("Fav cars:"+data.getCheckbox());
+        String a="";
+        for(String s:finalOutputString){
+            a=s+","+a;
+        }
+        holder.checkbox.setText("Fav cars: "+a);
         holder.linearLayout1.addView(holder.checkbox);
+
+
+        //Images
+        //call
+        holder.Call=new ImageView(context);
+        holder.Call.setLayoutParams(params);
+        int id = context.getResources().getIdentifier("@android:drawable/ic_menu_call", null, null);
+        holder.Call.setImageResource(id);
+        holder.Call.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String num = "tel:" + data.getNumber();
+                final Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse(num));
+                context.startActivity(intent);
+            }
+        });
+        holder.linearLayout2.addView(holder.Call);
+
+        //sms
+        holder.Sms=new ImageView(context);
+        holder.Sms.setLayoutParams(params);
+        int smsid = context.getResources().getIdentifier("@android:drawable/ic_dialog_email", null, null);
+        Log.e(TAG, "onBindViewHolder: smsid-->"+smsid );
+        holder.Sms.setImageResource(smsid);
+        holder.Sms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String num = "sms:" + data.getNumber();
+                final Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(num));
+                context.startActivity(intent);
+            }
+        });
+        holder.linearLayout2.addView(holder.Sms);
+
+        //Wp
+        LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(60, 60);
+        params.setMargins(0,20,30,20);
+        holder.Wp=new ImageView(context);
+        holder.Wp.setLayoutParams(param);
+        int wpid = context.getResources().getIdentifier("@android:draw(able/ic_dialog_email", null, null);
+        holder.Wp.setImageResource(R.drawable.whatsapp);
+//        holder.Wp.setLayoutParams();
+//        holder.Wp.setMaxWidth(10);
+        Log.e(TAG, "onBindViewHolder: wpid==>"+wpid );
+//        holder.Wp.setImageResource(wpid);
+        holder.Wp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String num = data.getNumber();
+                String url = "https://api.whatsapp.com/send?phone=+91" + num;
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                context.startActivity(i);
+            }
+        });
+        holder.linearLayout2.addView(holder.Wp);
+
+        //website
+        holder.Webic=new ImageView(context);
+        holder.Webic.setLayoutParams(params);
+//        int web = context.getResources().getIdentifier("@drawable/ic_baseline_web_24",null,null);
+        holder.Webic.setImageResource(R.drawable.ic_baseline_web_24);
+//        holder.Webic.setImageResource(web);
+        holder.Webic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String url = "https://www." + data.getWeb();
+                Log.e("web", "onClick: " + url);
+                Intent i = new Intent(context, Web_Page.class);
+                i.putExtra("site", url);
+                Log.e("web", "onClick: " + url);
+                context.startActivity(i);
+            }
+        });
+        holder.linearLayout2.addView(holder.Webic);
+
+        //edit
+        holder.Edit=new ImageView(context);
+        holder.Edit.setLayoutParams(params);
+        holder.Edit.setImageResource(R.drawable.ic_baseline_edit_24);
+        holder.Edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e(TAG, "onClick: Data ret:"+" id:"+data.getId()+" name:"+data.getName()+" Email:"+data.getEmail()+" Phone:"+data.getNumber()+
+                        " Dropdon:"+data.getDropdown()+" Radio:"+data.getRadio()+" Checkbox:"+data.getCheckbox()
+                +" Date:"+data.getDate()+" Time:"+data.getTime()+" web"+data.getWeb());
+                i = new Intent(context, MainActivity.class);
+                i.putExtra("ID", data.getId());
+                i.putExtra("Name", data.getName());
+                i.putExtra("Email", data.getEmail());
+                i.putExtra("Phone", data.getNumber());
+                i.putExtra("Dropdown",data.getDropdown());
+                i.putExtra("Radio",data.getRadio());
+                i.putExtra("Check",data.getCheckbox());
+                i.putExtra("Date",data.getDate());
+                i.putExtra("Time",data.getTime());
+                i.putExtra("Website", data.getWeb());
+                i.addFlags(0);
+//                mDatabase.Update(data);
+                context.startActivity(i);
+
+            }
+        });
+        holder.linearLayout2.addView(holder.Edit);
+
+
+
 
 
 
