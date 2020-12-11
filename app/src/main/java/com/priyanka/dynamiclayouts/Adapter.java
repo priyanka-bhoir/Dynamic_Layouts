@@ -1,17 +1,14 @@
 package com.priyanka.dynamiclayouts;
 
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
-import android.widget.CheckBox;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -25,6 +22,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 import static android.content.ContentValues.TAG;
 
@@ -65,12 +63,14 @@ public class Adapter extends RecyclerView.Adapter<View_Holder> {
         holder.Name=new TextView(context);
         holder.Name.setText("Name: "+data.getName());
         holder.Name.setLayoutParams(params);
+        holder.Name.setTextSize(20);
         holder.linearLayout1.addView(holder.Name);
 
         //FAV CHAR
         holder.dropdown=new TextView(context);
         holder.dropdown.setLayoutParams(params);
         holder.dropdown.setText("Fav character: "+data.getDropdown());
+        holder.dropdown.setTextSize(20);
         holder.linearLayout1.addView(holder.dropdown);
 
         //RADIO
@@ -78,6 +78,7 @@ public class Adapter extends RecyclerView.Adapter<View_Holder> {
         Log.e(TAG, "onBindViewHolder: "+data.getRadio() );
         holder.radio.setText("Fav radio station: "+data.getRadio());
         holder.radio.setLayoutParams(params);
+        holder.radio.setTextSize(20);
         holder.linearLayout1.addView(holder.radio);
 
         //fav cars
@@ -93,6 +94,7 @@ public class Adapter extends RecyclerView.Adapter<View_Holder> {
             a=s+","+a;
         }
         holder.checkbox.setText("Fav cars: "+a);
+        holder.checkbox.setTextSize(20);
         holder.linearLayout1.addView(holder.checkbox);
 
 
@@ -100,8 +102,8 @@ public class Adapter extends RecyclerView.Adapter<View_Holder> {
         //call
         holder.Call=new ImageView(context);
         holder.Call.setLayoutParams(params);
-        int id = context.getResources().getIdentifier("@android:drawable/ic_menu_call", null, null);
-        holder.Call.setImageResource(id);
+//        int id = context.getResources().getIdentifier("@android:drawable/ic_menu_call", null, null);
+        holder.Call.setImageResource(R.drawable.ic_baseline_call_24);
         holder.Call.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,9 +118,9 @@ public class Adapter extends RecyclerView.Adapter<View_Holder> {
         //sms
         holder.Sms=new ImageView(context);
         holder.Sms.setLayoutParams(params);
-        int smsid = context.getResources().getIdentifier("@android:drawable/ic_dialog_email", null, null);
-        Log.e(TAG, "onBindViewHolder: smsid-->"+smsid );
-        holder.Sms.setImageResource(smsid);
+//        int smsid = context.getResources().getIdentifier("@android:drawabl", null, null);
+//        Log.e(TAG, "onBindViewHolder: smsid-->"+smsid );
+        holder.Sms.setImageResource(R.drawable.ic_baseline_sms_24);
         holder.Sms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -201,6 +203,29 @@ public class Adapter extends RecyclerView.Adapter<View_Holder> {
         });
         holder.linearLayout2.addView(holder.Edit);
 
+        //Email
+        holder.Emailic=new ImageView(context);
+        holder.Emailic.setLayoutParams(params);
+        holder.Emailic.setImageResource(R.drawable.ic_baseline_email_24);
+        holder.Emailic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String to = data.getEmail();
+                final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+                intent.setType("`message/rfc822`");
+                final PackageManager pm = context.getPackageManager();
+                final List<ResolveInfo> matches = pm.queryIntentActivities(intent, 0);
+                ResolveInfo best = null;
+                for (final ResolveInfo info : matches)
+                    if (info.activityInfo.packageName.endsWith(".gm") ||
+                            info.activityInfo.name.toLowerCase().contains("gmail")) best = info;
+                if (best != null)
+                    intent.setClassName(best.activityInfo.packageName, best.activityInfo.name);
+                intent.putExtra(intent.EXTRA_EMAIL, new String[]{to});
+                context.startActivity(intent);
+            }
+        });
+        holder.linearLayout2.addView(holder.Emailic);
 
 
 
@@ -213,5 +238,9 @@ public class Adapter extends RecyclerView.Adapter<View_Holder> {
     @Override
     public int getItemCount() {
         return arrayList.size();
+    }
+
+    public String userAt(int position){
+        return arrayList.get(position).getId();
     }
 }

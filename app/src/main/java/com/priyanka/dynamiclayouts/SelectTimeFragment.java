@@ -9,8 +9,13 @@ import android.widget.TimePicker;
 
 import androidx.fragment.app.DialogFragment;
 
+import org.xml.sax.helpers.ParserAdapter;
+
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class SelectTimeFragment extends DialogFragment implements TimePicker.OnTimeChangedListener {
     private EditText editText;
@@ -25,6 +30,7 @@ public class SelectTimeFragment extends DialogFragment implements TimePicker.OnT
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Calendar calendar = Calendar.getInstance();
         sdf = new SimpleDateFormat("hh:mm");
+
         int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
         int min = calendar.get(Calendar.MINUTE);
 
@@ -42,8 +48,20 @@ public class SelectTimeFragment extends DialogFragment implements TimePicker.OnT
     }
     public void populateSetTime(EditText edit,  int hourOfDay, int minute)
     {
-//        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm");
-        String s=String.format("%02d:%02d", hourOfDay , minute);
+        Date date = new Date();
+        String s;
+//        s=String.format("%02d:%02d", hourOfDay , minute);
+        String val= String.valueOf(hourOfDay+minute);
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm");
+        try {
+            date=sdf.parse(val);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+//        String s= String.valueOf(hourOfDay+minute);
+//        sdf.format(s);
+        s= sdf.format(date);
         edit.setText(s+" "+am_pm);
     }
 

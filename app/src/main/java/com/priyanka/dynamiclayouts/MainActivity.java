@@ -6,6 +6,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -15,6 +16,8 @@ import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
 import android.text.method.TransformationMethod;
 import android.util.Log;
+import android.util.Patterns;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -65,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     EditText editText,editText1;
     ArrayList<String> checklist;
     ArrayList<String> list;
-    TextView textView,Dropdown,radio,checkbox;
+    TextView textView,Dropdown,radio,checkbox,textView1;
     RadioButton radioButton,radioButton1;
     CheckBox checkBox,checkBox1,checkBox2,checkBox3;
     TableRow tableRow;
@@ -75,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
     int flag=0;
     Intent intent;
 
+    @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -225,18 +229,18 @@ public class MainActivity extends AppCompatActivity {
 
         //Text inputlayot
         //name
-        nametext=text(nametextInputLayout,nametext,"Name",flag,i);
+        nametext=text(linearLayout,nametextInputLayout,nametext,"Name",flag,i);
         nametext.setFocusable(true);
 
         //number
-        numbertext=text(numbertextLayout,numbertext,"Number",flag,i);
+        numbertext=text(linearLayout,numbertextLayout,numbertext,"Number",flag,i);
         numbertext.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10)});
         numbertext.setFocusable(true);
         numbertext.setInputType(InputType.TYPE_CLASS_NUMBER);
 //        linearLayout.addView(numbertextLayout);
 
         //Email
-        emailtext=text(emaillayout,emailtext,"Email",flag,i);
+        emailtext=text(linearLayout,emaillayout,emailtext,"Email",flag,i);
         emailtext.setFocusable(true);
         emailtext.setInputType(InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS);
 //        linearLayout.addView(emaillayout);
@@ -382,7 +386,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //website
-        websitetext=text(websiteLayout,websitetext,"Website",flag,i);
+        websitetext=text(linearLayout,websiteLayout,websitetext,"Website",flag,i);
         websitetext.setFocusable(true);
         websitetext.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
 
@@ -461,10 +465,10 @@ public class MainActivity extends AppCompatActivity {
             websitetext.setText(Websitei);
         }}
 
-        passwordtext=text(passwordLayout,passwordtext,"Password",flag,9);
+        passwordtext=text(linearLayout,passwordLayout,passwordtext,"Password",flag,9);
         passwordtext.setTransformationMethod(new PasswordTransformationMethod());
 
-        confpasstext=text(confPassLayout,confpasstext,"ReEnter password",flag,9);
+        confpasstext=text(linearLayout,confPassLayout,confpasstext,"ReEnter password",flag,9);
         confpasstext.setTransformationMethod(new PasswordTransformationMethod());
 
         //Submit button
@@ -520,7 +524,11 @@ public class MainActivity extends AppCompatActivity {
                     emailtext.setError("Empty");
                 }else if(websitetext.getText().toString().equals("")){
                     websitetext.setError("Empty");
-                }else if( confpasstext.getText().toString().equals("")){
+                }else if(Patterns.WEB_URL.matcher(websitetext.getText().toString()).matches())
+                {
+
+                }
+                else if( confpasstext.getText().toString().equals("")){
                     Log.e(TAG, "onClick: "+"pass" +passwordtext.getText().toString()+"c=>"+confpasstext.getText().toString());
                     confpasstext.setError("Invalid");
                 }else if (passwordtext.getText().toString().equals("")||!confpasstext.getText().toString().equals(passwordtext.getText().toString())){
@@ -531,16 +539,16 @@ public class MainActivity extends AppCompatActivity {
                     Log.e(TAG, "onClick: ====> input Priyanka"+input);
                     data=new Data(nametext.getText().toString(),numbertext.getText().toString(),emailtext.getText().toString(),websitetext.getText().toString(),passwordtext.getText().toString(),val,radiot,input,editText.getText().toString(),editText1.getText().toString());
                     if (IDi==null){
-                    try{
-                    mdata.insert(data);
-                    Toast toast=Toast.makeText(getApplicationContext(),"Data Inserted",Toast.LENGTH_SHORT);
-                    toast.show();
-                    mdata.listData();
-                    Intent intent=new Intent(MainActivity.this, Recycler.class);
-                    startActivity(intent);
-                    }catch(Exception e){
+                        try{
+                            mdata.insert(data);
+                            Toast toast=Toast.makeText(getApplicationContext(),"Data Inserted",Toast.LENGTH_SHORT);
+                            toast.show();
+                            mdata.listData();
+                            Intent intent=new Intent(MainActivity.this, Recycler.class);
+                            startActivity(intent);
+                            }catch(Exception e){
                         Toast toast=Toast.makeText(getApplicationContext(),"Data Error==> Enter the full data",Toast.LENGTH_SHORT);
-                    }
+                        }
                     }
                     else {
                         mdata.Update(data);
@@ -554,6 +562,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //textview
+        textView1=new TextView(this);
+        textView1.setText("Already a user");
+        textView1.setTextColor(R.color.purple_200);
+        textView1.setGravity(Gravity.CENTER);
+        textView1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(getApplicationContext(),MainActivity.class);
+                startActivity(intent);
+            }
+        });
+        linearLayout.addView(textView1);
+
+        //home buttom
         array=new Button(this);
         array.setLayoutParams(params);
         array.setText("Home");
@@ -568,7 +591,7 @@ public class MainActivity extends AppCompatActivity {
         linearLayout.addView(array);
     }
 
-    TextInputEditText text(TextInputLayout numbertextLayout, TextInputEditText numbertext, String hint, int flag, int i){
+    TextInputEditText text(LinearLayout ll,TextInputLayout numbertextLayout, TextInputEditText numbertext, String hint, int flag, int i){
 
 //        String text;
 //        i--;
@@ -588,7 +611,7 @@ public class MainActivity extends AppCompatActivity {
         if (i==9){
             numbertextLayout.setPasswordVisibilityToggleEnabled(true);
         }
-        linearLayout.addView(numbertextLayout);
+        ll.addView(numbertextLayout);
 //        text=numbertext.getText().toString();
         return numbertext;
     }

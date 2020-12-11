@@ -135,9 +135,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db=getReadableDatabase();
 
         Log.e(TAG, "search:SQLiteDatabase " );
-        String selection = email+"= ?";
+        String selection = email+"= ? and "+password+"= ?";
 
-        String[] selectionArgs = {Email};
+        String[] selectionArgs = {Email,Pass};
 
         Cursor cursor= db.query(Table_name,columns,selection,selectionArgs,null,null,null);
         int count=cursor.getCount();
