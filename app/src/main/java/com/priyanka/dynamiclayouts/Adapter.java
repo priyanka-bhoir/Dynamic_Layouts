@@ -1,5 +1,9 @@
 package com.priyanka.dynamiclayouts;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,6 +19,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
@@ -24,7 +30,11 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import pub.devrel.easypermissions.EasyPermissions;
+
 import static android.content.ContentValues.TAG;
+import static androidx.core.app.ActivityCompat.requestPermissions;
+import static androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale;
 
 public class Adapter extends RecyclerView.Adapter<View_Holder> {
     Context context;
@@ -51,6 +61,7 @@ public class Adapter extends RecyclerView.Adapter<View_Holder> {
         return view_holder;
     }
 
+    @SuppressLint("ResourceAsColor")
     @Override
     public void onBindViewHolder(@NonNull View_Holder holder, int position) {
 
@@ -98,6 +109,17 @@ public class Adapter extends RecyclerView.Adapter<View_Holder> {
         holder.linearLayout1.addView(holder.checkbox);
 
 
+        //View
+//        LinearLayout.LayoutParams paramv = new LinearLayout.LayoutParams((int) 0.5, 150);
+////        paramv.setMargins(30,20,30,20);
+//        View view=new View(context);
+//        view.setLayoutParams(paramv);
+//        view.setBackgroundColor(R.color.black);
+//        holder.linearLayout2.addView(view);
+
+
+
+
         //Images
         //call
         holder.Call=new ImageView(context);
@@ -107,10 +129,30 @@ public class Adapter extends RecyclerView.Adapter<View_Holder> {
         holder.Call.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String num = "tel:" + data.getNumber();
-                final Intent intent = new Intent(Intent.ACTION_DIAL);
-                intent.setData(Uri.parse(num));
-                context.startActivity(intent);
+
+
+                if(ContextCompat.checkSelfPermission(context.getApplicationContext(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
+                    Log.e(TAG, "call permission: not granted ");
+                    requestPermissions((Activity)context,new String[]{Manifest.permission.CALL_PHONE},10);
+                }
+//                else if()
+//                else if(EasyPermissions.hasPermissions((Activity)context, Manifest.permission.CALL_PHONE)){
+//                    requestPermissions((Activity)context,new String[]{Manifest.permission.CALL_PHONE},10);
+//
+//                }
+                else if (shouldShowRequestPermissionRationale((Activity)context,Manifest.permission.CALL_PHONE)){
+                    ActivityCompat.requestPermissions((Activity)context,
+                            new String[]{Manifest.permission.CALL_PHONE},
+                            9);
+                }
+                else {
+
+
+                    String num = "tel:" + data.getNumber();
+                    final Intent intent = new Intent(Intent.ACTION_DIAL);
+                    intent.setData(Uri.parse(num));
+                    context.startActivity(intent);
+                }
             }
         });
         holder.linearLayout2.addView(holder.Call);
@@ -124,11 +166,17 @@ public class Adapter extends RecyclerView.Adapter<View_Holder> {
         holder.Sms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(ContextCompat.checkSelfPermission(context.getApplicationContext(), Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED){
+                    Log.e(TAG, "Sms Permission: not granted ");
+                    requestPermissions((Activity)context,new String[]{Manifest.permission.SEND_SMS},10);
+                }
+                else {
+
                 String num = "sms:" + data.getNumber();
                 final Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(num));
                 context.startActivity(intent);
-            }
+            }}
         });
         holder.linearLayout2.addView(holder.Sms);
 
@@ -195,6 +243,7 @@ public class Adapter extends RecyclerView.Adapter<View_Holder> {
                 i.putExtra("Date",data.getDate());
                 i.putExtra("Time",data.getTime());
                 i.putExtra("Website", data.getWeb());
+                i.putExtra("Password",data.getPass());
                 i.addFlags(0);
 //                mDatabase.Update(data);
                 context.startActivity(i);
@@ -226,10 +275,6 @@ public class Adapter extends RecyclerView.Adapter<View_Holder> {
             }
         });
         holder.linearLayout2.addView(holder.Emailic);
-
-
-
-
 
 
 

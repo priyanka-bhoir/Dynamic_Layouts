@@ -29,6 +29,8 @@ public class Data {
         this.time = time;
     }
 
+
+
     public String getDropdown() {
         return dropdown;
     }
@@ -85,22 +87,6 @@ public class Data {
         this.time = time;
     }
 
-    public Data(String id, String name1, String phone, String email1, String s, String name, String number, String email, Type type, String web, String pass) {
-        this.id = this.id;
-        this.name = name;
-        this.number = number;
-        this.email = email;
-        this.web = web;
-        this.pass = pass;
-    }
-    public Data(String name, String number, String email, String web, String pass,String id) {
-        this.id = id;
-        this.name = name;
-        this.number = number;
-        this.email = email;
-        this.web = web;
-        this.pass = pass;
-    }
 
     public String getId() {
         return id;

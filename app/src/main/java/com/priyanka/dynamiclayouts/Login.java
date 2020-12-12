@@ -183,6 +183,7 @@ public class Login extends AppCompatActivity {
 
         emailtext=text(linearLayout,email,emailtext,"Enter Your Email",0,0);
         emailtext.setFocusable(true);
+//        emailtext.setBackgroundColor(Integer.parseInt("#00000000"));
         emailtext.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
 
         passwordtext=text(linearLayout,password,passwordtext,"Enter your password",0,9);
@@ -214,7 +215,7 @@ public class Login extends AppCompatActivity {
         linearLayout.addView(button);
 
         textView1=new TextView(this);
-        textView1.setText("Not an existing user");
+        textView1.setText("Not an existing user?");
         textView1.setTextColor(R.color.purple_200);
         textView1.setGravity(Gravity.CENTER);
         textView1.setOnClickListener(new View.OnClickListener() {

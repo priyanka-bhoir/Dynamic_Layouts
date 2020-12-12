@@ -108,6 +108,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     void Update(Data data){
         ContentValues contentValues =new ContentValues();
 
+        Log.e(TAG, "Update: ==>"+data.getName() );
         contentValues.put(name,data.getName());
 //        contentValues.put(lname,data.getLname());
         contentValues.put(email,data.getEmail());
@@ -119,7 +120,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(time,data.getTime());
         contentValues.put(web,data.getWeb());
         SQLiteDatabase db = this.getReadableDatabase();
-        db.update(Table_name,contentValues,ID +" =   ? ",null);
+        db.update(Table_name,contentValues,ID +" = ? ",new String[]{data.getId()});
     }
 
     void Delete(String data){

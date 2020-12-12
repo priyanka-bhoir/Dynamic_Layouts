@@ -10,12 +10,27 @@
     app:cardCornerRadius="10dp"
     android:id="@+id/cardView"
     app:cardElevation="10dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <View android:layout_height="240dp"
+            android:layout_width="0.5dp"
+            android:background="@color/black"
+            android:layout_marginRight="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="left"/>
+
+    </RelativeLayout>
     <LinearLayout
         android:id="@+id/cardlin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         >
+
 <!--        <TextView-->
 <!--            android:id="@+id/nameV"-->
 <!--            android:layout_width="wrap_content"-->
@@ -58,6 +73,7 @@
 <!--            android:layout_height="wrap_content"/>-->
 
     </LinearLayout>
+
     <LinearLayout
         android:id="@+id/linear_left"
         android:layout_width="wrap_content"
