@@ -46,6 +46,8 @@ public class Login extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         linearLayout=findViewById(R.id.linear_login);
 
+        Intent i=new Intent(this,Recycler.class);
+        startActivity(i);
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
         params.setMargins(30,20,30,20);
