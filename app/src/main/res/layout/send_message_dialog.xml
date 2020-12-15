@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent">
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -10,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter the Subject"
+        android:padding="10dp"
         android:id="@+id/emaildialogmessage">
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
@@ -26,18 +30,22 @@
         android:padding="10dp"
         android:layout_below="@+id/emaildialogmessage"
         android:id="@+id/messagetext">
+
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/Messageedit"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"></com.google.android.material.textfield.TextInputEditText>
+            android:layout_height="match_parent" />
     </com.google.android.material.textfield.TextInputLayout>
 
-<!--    <Button-->
-<!--        android:layout_gravity="center"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Send"-->
-<!--        android:layout_below="@+id/messagetext"-->
-<!--        tools:ignore="MissingConstraints"></Button>-->
+    <Button
+        android:id="@+id/dialog_button"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:padding="10dp"
+        android:layout_height="wrap_content"
+        android:text="Send via intent"
+        android:layout_below="@+id/messagetext"
+        tools:ignore="MissingConstraints" />
 
 </RelativeLayout>
+</ScrollView>

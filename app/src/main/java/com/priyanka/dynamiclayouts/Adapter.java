@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -31,6 +32,8 @@ public class Adapter extends RecyclerView.Adapter<View_Holder> {
     View_Holder holder;
     private OnItemClickLister mlistener;
     private OnSmsClickLister lister;
+    private OnEmailClickListener emailClickListener;
+    private OnWpClickListener wpClickListener;
     Recycler recycler;
 
 //    holder.Name=new TextView(context);
@@ -50,12 +53,25 @@ public class Adapter extends RecyclerView.Adapter<View_Holder> {
     public interface OnSmsClickLister{
         void onSmsClicked(String position);
     }
-    public void setOnItemClickListener(OnItemClickLister listener){
+    public interface OnEmailClickListener{
+        void onEmailClickListener(String postion);
+    }
+    public interface OnWpClickListener{
+        void onWpClickListener(String position);
+    }
 
+    public void setOnItemClickListener(OnItemClickLister listener){
         mlistener=listener;
     }
     public void setSmsClickListener(OnSmsClickLister listener){
         lister=listener;
+    }
+
+    public void onEmailClickListener(OnEmailClickListener listener){
+        emailClickListener=listener;
+    }
+    public void setOnWpClickListener(OnWpClickListener listener){
+        wpClickListener=listener;
     }
 
 
@@ -110,7 +126,15 @@ public class Adapter extends RecyclerView.Adapter<View_Holder> {
         //RADIO
 //        holder.radio=new TextView(context);
         Log.e(TAG, "onBindViewHolder: "+data.getRadio() );
-        holder.radio.setText("Fav radio station: "+data.getRadio());
+        String str=data.getRadio();
+        String al;
+        if (str.equals("Radio 1")){
+            al="Spotify";
+        }
+        else {
+            al="Play Music";
+        }
+        holder.radio.setText("Fav radio station: "+al);
         holder.radio.setLayoutParams(params);
         holder.radio.setTextSize(20);
         if (holder.radio.getParent()==null){
@@ -201,7 +225,7 @@ public class Adapter extends RecyclerView.Adapter<View_Holder> {
         holder.Sms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mlistener!=null){
+                if (lister!=null){
                     String num=data.getNumber();
                     if (!num.equals(RecyclerView.NO_POSITION)){
                         lister.onSmsClicked(num);
@@ -245,13 +269,24 @@ public class Adapter extends RecyclerView.Adapter<View_Holder> {
         holder.Wp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String num = data.getNumber();
-                String url = "https://api.whatsapp.com/send?phone=+91" + num;
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(url));
-                context.startActivity(i);
+                if (wpClickListener!=null){
+                    String d=data.getNumber();
+                    if (!d.equals(RecyclerView.NO_POSITION)){
+                        wpClickListener.onWpClickListener(d);
+                    }
+                }
             }
         });
+//        holder.Wp.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                String num = data.getNumber();
+//                String url = "https://api.whatsapp.com/send?phone=+91" + num;
+//                Intent i = new Intent(Intent.ACTION_VIEW);
+//                i.setData(Uri.parse(url));
+//                context.startActivity(i);
+//            }
+//        });
         if (holder.Wp.getParent()==null){
         holder.linearLayout2.addView(holder.Wp);}
 
@@ -313,8 +348,14 @@ public class Adapter extends RecyclerView.Adapter<View_Holder> {
         holder.Emailic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String to = data.getEmail();
-                recycler.OpenDialog(to,2, context);
+                if (emailClickListener!=null){
+                    String num=data.getEmail();
+                    if (!num.equals(RecyclerView.NO_POSITION)){
+                        emailClickListener.onEmailClickListener(num);
+                    }
+                }
+//                String to = data.getEmail();
+//                recycler.OpenDialog(to,2, context);
 
             }
         });
