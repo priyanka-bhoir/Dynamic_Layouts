@@ -35,6 +35,7 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -71,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
     TextView textView,Dropdown,radio,checkbox,textView1;
     RadioButton radioButton,radioButton1;
     CheckBox checkBox,checkBox1,checkBox2,checkBox3;
+    SharedPreference preference;
     TableRow tableRow;
     Gson gson;
     String val;
@@ -84,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        Log.d("Firebasetoken", "token "+ FirebaseInstanceId.getInstance().getToken());
         linearLayout=findViewById(R.id.linear);
         scrollView =findViewById(R.id.scrollView);
         listData=new List<TextInputEditText>() {
@@ -212,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
         mdata=new DatabaseHelper(this);
         checklist=new ArrayList<>();
         gson=new Gson();
+        preference=new SharedPreference(getApplicationContext());
 
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
@@ -582,11 +585,15 @@ public class MainActivity extends AppCompatActivity {
                             data=new Data(nametext.getText().toString(),numbertext.getText().toString(),emailtext.getText().toString(),websitetext.getText().toString(),passwordtext.getText().toString(),val,radiot,input,editText.getText().toString(),editText1.getText().toString());
 
                             mdata.insert(data);
+                            preference.setEmail(emailtext.getText().toString());
+                            preference.setPassword(passwordtext.getText().toString());
                             Toast toast=Toast.makeText(getApplicationContext(),"Data Inserted",Toast.LENGTH_SHORT);
                             toast.show();
                             mdata.listData();
                             Intent intent=new Intent(MainActivity.this, Recycler.class);
+
                             startActivity(intent);
+                            finish();
                             }catch(Exception e){
                         Toast toast=Toast.makeText(getApplicationContext(),"Data Error==> Enter the full data",Toast.LENGTH_SHORT);
                         }

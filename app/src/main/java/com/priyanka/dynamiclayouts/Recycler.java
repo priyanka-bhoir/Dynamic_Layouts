@@ -11,10 +11,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
@@ -53,6 +57,7 @@ public class Recycler extends AppCompatActivity {
     Data data;
     View_Holder holder;
     AlertDialog dialog;
+    SharedPreference sharedPreference;
 
 //    Context context=getApplicationContext();
 
@@ -64,6 +69,7 @@ public class Recycler extends AppCompatActivity {
         setContentView(R.layout.activity_recycler_view);
         databaseHelper = new DatabaseHelper(this);
         dataList = databaseHelper.listData();
+        sharedPreference= new SharedPreference(getApplicationContext());
         AlertDialog.Builder builder = new AlertDialog.Builder(Recycler.this);
 
 
@@ -143,7 +149,7 @@ public class Recycler extends AppCompatActivity {
                             9);
                 } else {
                     String num = "tel:" + tel;
-                    final Intent intent = new Intent(Intent.ACTION_DIAL);
+                    final Intent intent = new Intent(Intent.ACTION_CALL);
                     intent.setData(Uri.parse(num));
                     startActivity(intent);
                 }
@@ -302,12 +308,15 @@ public class Recycler extends AppCompatActivity {
                     //sms
                     String num = "sms:" + position;
                     Log.e(TAG, "onClick: sms" + position);
-                    final Intent intent = new Intent(Intent.ACTION_VIEW);
+//                    final Intent intent = new Intent(Intent.ACTION_VIEW);
 //                PendingIntent pi=PendingIntent.getActivities(getContext(),0, new Intent[]{intent},0);
-                    SmsManager sms = SmsManager.getDefault();
-                    ArrayList<String> string = sms.divideMessage(s);
-//                    sms.sendTextMessage(position, null, s, null,null);
-                    sms.sendMultipartTextMessage(position, null, string, null, null);
+//                    SmsManager sms = SmsManager.getDefault();
+//                    ArrayList<String> string = sms.divideMessage(s);
+////                    sms.sendTextMessage(position, null, s, null,null);
+//                    sms.sendMultipartTextMessage(position, null, string, null, null);
+//                    Toast.makeText(context,"message sent to "+position,Toast.LENGTH_LONG).show();
+                    smsBySmsManager(position,s);
+
 
                 } else if (flag == 2) {
                     //Email
@@ -560,6 +569,74 @@ public class Recycler extends AppCompatActivity {
 
     }
 
+    private void smsBySmsManager(String phone,String message){
+
+
+// --sends an SMS message to another device---
+        String SENT = "SMS_SENT";
+        String DELIVERED = "SMS_DELIVERED";
+
+        PendingIntent sentPI = PendingIntent.getBroadcast(this, 0,
+                new Intent(SENT), 0);
+
+        PendingIntent deliveredPI = PendingIntent.getBroadcast(this, 0,
+                new Intent(DELIVERED), 0);
+
+//---when the SMS has been sent---
+        registerReceiver(new BroadcastReceiver(){
+            @Override
+            public void onReceive(Context arg0, Intent arg1) {
+                switch (getResultCode())
+                {
+                    case Activity.RESULT_OK:
+                        Toast.makeText(getBaseContext(), "SMS sent",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
+                        Toast.makeText(getBaseContext(), "Generic failure",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    case SmsManager.RESULT_ERROR_NO_SERVICE:
+                        Toast.makeText(getBaseContext(), "No service",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    case SmsManager.RESULT_ERROR_NULL_PDU:
+                        Toast.makeText(getBaseContext(), "Null PDU",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    case SmsManager.RESULT_ERROR_RADIO_OFF:
+                        Toast.makeText(getBaseContext(), "Radio off",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        }, new IntentFilter(SENT));
+
+//---when the SMS has been delivered---
+        registerReceiver(new BroadcastReceiver(){
+            @Override
+            public void onReceive(Context arg0, Intent arg1) {
+                switch (getResultCode())
+                {
+                    case Activity.RESULT_OK:
+                        Toast.makeText(getBaseContext(), "SMS delivered",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        Toast.makeText(getBaseContext(), "SMS not delivered",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        }, new IntentFilter(DELIVERED));
+
+        SmsManager sms = SmsManager.getDefault();
+        sms.sendTextMessage(phone, null, message, sentPI, deliveredPI);
+
+/***************************************/
+
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -571,7 +648,9 @@ public class Recycler extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add:
-                Intent i = new Intent(this, MainActivity.class);
+                Intent i = new Intent(this, Login.class);
+                sharedPreference.setEmail("");
+                sharedPreference.setPassword("");
                 startActivity(i);
                 //add the function to perform here
                 return (true);
@@ -579,4 +658,18 @@ public class Recycler extends AppCompatActivity {
         return (super.onOptionsItemSelected(item));
     }
 
+    @Override
+    public void onBackPressed() {
+//        super.onBackPressed();
+        new AlertDialog.Builder(this)
+                .setTitle("Really Exit?")
+                .setMessage("Are you sure you want to exit?")
+                .setNegativeButton(android.R.string.no, null)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        Recycler.super.onBackPressed();
+                    }
+                }).create().show();
+    }
 }

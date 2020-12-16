@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -37,6 +38,7 @@ public class Login extends AppCompatActivity {
     List<TextInputEditText> listData;
     Button button;
     DatabaseHelper databaseHelper;
+    SharedPreference sharedPreference;
 
 
     @SuppressLint("ResourceAsColor")
@@ -45,9 +47,14 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         linearLayout=findViewById(R.id.linear_login);
+        sharedPreference=new SharedPreference(getApplicationContext());
+        Log.d("Firebasetoken", "token "+ FirebaseInstanceId.getInstance().getToken());
 
+
+        if (!sharedPreference.getEmail().isEmpty() && !sharedPreference.getPassword().isEmpty()){
         Intent i=new Intent(this,Recycler.class);
         startActivity(i);
+        finish();}
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
         params.setMargins(30,20,30,20);
@@ -192,6 +199,7 @@ public class Login extends AppCompatActivity {
         passwordtext.setTransformationMethod(new PasswordTransformationMethod());
 
         button=new Button(this);
+        params.gravity=Gravity.CENTER;
         button.setLayoutParams(params);
         button.setText("Submit");
         button.setBackgroundColor(R.color.purple_700);
@@ -204,6 +212,8 @@ public class Login extends AppCompatActivity {
                 Log.e("TAG", "email: "+emailtext.getText().toString() );
                 Log.e("TAG", "pass: "+passwordtext.getText().toString());
                 val=databaseHelper.search(emailtext.getText().toString(),passwordtext.getText().toString());
+                sharedPreference.setEmail(emailtext.getText().toString());
+                sharedPreference.setPassword(passwordtext.getText().toString());
                 if (val==true){
                     Intent intent=new Intent(Login.this,Recycler.class);
                     startActivity(intent);
